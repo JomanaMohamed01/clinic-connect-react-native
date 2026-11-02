@@ -56,9 +56,9 @@ export default function BookScreen() {
 
   async function onConfirm() {
     if (!user || !doctor) return;
-    if (!time) return showToast("Please pick a time.", "error");
     if (!date || !dateKey) return showToast("Please pick a date.", "error");
     if (isFriday(date)) return showToast("Fridays are closed — please pick another day.", "error");
+    if (!time) return showToast("Please pick a time.", "error");
     if (!lastName.trim()) return showToast("Please enter your last name", "error");
     if (!firstName.trim()) return showToast("Please enter your first name", "error");
     const ageNum = Number(age);
@@ -110,30 +110,6 @@ export default function BookScreen() {
           </View>
 
           <View style={styles.sectionTitle}>
-            <Clock color={colors.primary} size={16} />
-            <Text style={styles.sectionText}>Pick a time</Text>
-            <Text style={styles.sectionHint}>(15 min each)</Text>
-          </View>
-          <View style={styles.slots}>
-            {slots.map((slot) => {
-              const taken = dateKey ? isSlotTaken(rows, doctor.id, dateKey, slot) : false;
-              const active = time === slot;
-              return (
-                <Pressable
-                  key={slot}
-                  disabled={taken}
-                  onPress={() => setTime(slot)}
-                  style={[styles.slot, active && styles.slotActive, taken && styles.slotTaken]}
-                >
-                  <Text style={[styles.slotText, active && styles.slotTextActive, taken && styles.slotTextTaken]}>
-                    {slot}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <View style={styles.sectionTitle}>
             <Calendar color={colors.primary} size={16} />
             <Text style={styles.sectionText}>Pick a date</Text>
             <Text style={styles.sectionHint}>(Fridays closed)</Text>
@@ -148,11 +124,41 @@ export default function BookScreen() {
             <MonthCalendar
               selected={date}
               onSelect={(next) => {
+                const nextKey = toDateKey(next);
                 setDate(next);
                 setShowCalendar(false);
+                if (time && isSlotTaken(rows, doctor.id, nextKey, time)) setTime(null);
               }}
             />
           ) : null}
+
+          <View style={styles.sectionTitle}>
+            <Clock color={colors.primary} size={16} />
+            <Text style={styles.sectionText}>Pick a time</Text>
+            <Text style={styles.sectionHint}>(15 min each)</Text>
+          </View>
+          {dateKey ? (
+            <View style={styles.slots}>
+              {slots.map((slot) => {
+                const taken = isSlotTaken(rows, doctor.id, dateKey, slot);
+                const active = time === slot && !taken;
+                return (
+                  <Pressable
+                    key={slot}
+                    disabled={taken}
+                    onPress={() => setTime(slot)}
+                    style={[styles.slot, active && styles.slotActive, taken && styles.slotTaken]}
+                  >
+                    <Text style={[styles.slotText, active && styles.slotTextActive, taken && styles.slotTextTaken]}>
+                      {slot}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : (
+            <Text style={styles.timeHint}>Choose a date to see which times are already reserved.</Text>
+          )}
 
           <View style={[styles.details, shadow]}>
             <Text style={styles.detailsTitle}>Your details</Text>
@@ -235,6 +241,7 @@ const styles = StyleSheet.create({
   sectionTitle: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 10, marginTop: 8 },
   sectionText: { fontFamily: fonts.display, fontSize: 20, color: colors.ink },
   sectionHint: { fontFamily: fonts.sans, color: colors.muted, fontSize: 12 },
+  timeHint: { fontFamily: fonts.sans, color: colors.muted, fontSize: 14, marginBottom: 8 },
   slots: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 },
   slot: {
     width: "31%",
