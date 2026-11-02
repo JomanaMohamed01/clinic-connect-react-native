@@ -136,7 +136,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
           <Text style={styles.title}>Reserve appointment</Text>
           <Text style={styles.sub}>Book a walk-in patient. Their details are stored on the reservation.</Text>
 
-          <Text style={styles.label}>Doctor</Text>
+          <RequiredLabel text="Doctor" />
           <View style={styles.doctorGrid}>
             {DOCTORS.map((doctor) => {
               const active = doctorId === doctor.id;
@@ -160,7 +160,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
             <>
               <View style={styles.sectionLabel}>
                 <Calendar color={colors.primary} size={16} />
-                <Text style={styles.label}>Date</Text>
+                <RequiredLabel text="Date" />
               </View>
               <Pressable style={styles.dateButton} onPress={() => setShowCalendar((open) => !open)}>
                 <Calendar color={colors.muted} size={16} />
@@ -179,7 +179,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
 
               <View style={styles.sectionLabel}>
                 <Clock color={colors.primary} size={16} />
-                <Text style={styles.label}>Time</Text>
+                <RequiredLabel text="Time" />
                 {loadingSlots ? <Text style={styles.hint}>Loading…</Text> : null}
               </View>
               {date && isFriday(date) ? (
@@ -212,7 +212,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
               <Field label="Last name" value={lastName} onChangeText={setLastName} />
             </View>
             <Field label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" />
-            <Text style={styles.label}>Gender</Text>
+            <RequiredLabel text="Gender" />
             <View style={styles.genderRow}>
               {(["female", "male", "other"] as const).map((option) => {
                 const active = gender === option;
@@ -256,6 +256,14 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   );
 }
 
+function RequiredLabel({ text }: { text: string }) {
+  return (
+    <Text style={styles.label}>
+      {text} <Text style={styles.required}>*</Text>
+    </Text>
+  );
+}
+
 function Field({
   label,
   value,
@@ -269,7 +277,7 @@ function Field({
 }) {
   return (
     <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+      <RequiredLabel text={label} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -305,6 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
   },
+  required: { color: colors.danger },
   sectionLabel: {
     flexDirection: "row",
     alignItems: "center",
