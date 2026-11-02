@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Calendar, Clock } from "lucide-react-native";
 import { colors, fonts } from "@/constants/theme";
 import { GradientButton } from "@/components/GradientButton";
+import { ToastBanner } from "@/components/ToastBanner";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { DOCTORS, buildSlotStartIso, isFriday, startOfDay } from "@/lib/doctors";
 import { formatLongDate } from "@/lib/format";
@@ -87,11 +88,21 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   }, [freeSlots, time]);
 
   async function onSubmit() {
+    const ageNum = Number(age);
+    const unfilled = [
+      !doctorId,
+      !date,
+      !time,
+      !firstName.trim(),
+      !lastName.trim(),
+      !age.trim(),
+    ].filter(Boolean).length;
+    if (unfilled >= 2) return showToast("Please fill in the remaining fields", "error");
+
     if (!doctorId) return showToast("Select a doctor.", "error");
     if (!date) return showToast("Select a date.", "error");
     if (isFriday(date)) return showToast("Fridays are closed.", "error");
     if (!time) return showToast("Pick an available time.", "error");
-    const ageNum = Number(age);
     if (!firstName.trim() || !lastName.trim()) return showToast("First and last name are required.", "error");
     if (!ageNum || ageNum <= 0 || ageNum > 150) return showToast("Enter a valid age.", "error");
 
@@ -119,6 +130,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !submitting && onClose()}>
+      <View style={styles.root}>
       <KeyboardAvoidingView
         style={styles.root}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -252,6 +264,8 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <ToastBanner />
+      </View>
     </Modal>
   );
 }
