@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  type TextStyle,
 } from "react-native";
 import { Redirect, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -52,6 +53,10 @@ const strengthWidth: Record<PasswordStrength, `${number}%`> = {
   medium: "66%",
   strong: "100%",
 };
+
+// Web draws a sharp black focus ring around inputs while typing.
+const webInputOutline =
+  Platform.OS === "web" ? ({ outlineStyle: "none", outlineWidth: 0 } as unknown as TextStyle) : null;
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -219,7 +224,7 @@ export default function AuthScreen() {
                 placeholder="••••••••"
                 placeholderTextColor={colors.muted}
                 autoCapitalize="none"
-                style={styles.passwordInput}
+                style={[styles.passwordInput, webInputOutline]}
               />
               <Pressable onPress={() => setShowPassword((prev) => !prev)} style={styles.eye}>
                 {showPassword ? (
@@ -303,7 +308,7 @@ function Field({
         placeholderTextColor={colors.muted}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
-        style={[styles.input, error && styles.inputError]}
+        style={[styles.input, webInputOutline, error && styles.inputError]}
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
@@ -421,6 +426,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     color: colors.ink,
     fontSize: 15,
+    outlineWidth: 0,
   },
   inputError: {
     borderColor: colors.danger,
@@ -440,6 +446,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     color: colors.ink,
     fontSize: 15,
+    borderWidth: 0,
+    borderColor: "transparent",
+    outlineWidth: 0,
   },
   eye: {
     paddingHorizontal: 12,
