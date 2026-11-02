@@ -103,7 +103,8 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
     if (!date) return showToast("Select a date.", "error");
     if (isFriday(date)) return showToast("Fridays are closed.", "error");
     if (!time) return showToast("Pick an available time.", "error");
-    if (!firstName.trim() || !lastName.trim()) return showToast("First and last name are required.", "error");
+    if (!lastName.trim()) return showToast("Please enter the last name of the patient", "error");
+    if (!firstName.trim()) return showToast("Please enter the first name of the patient", "error");
     if (!ageNum || ageNum <= 0 || ageNum > 150) return showToast("Please enter the age of the patient", "error");
 
     setSubmitting(true);
