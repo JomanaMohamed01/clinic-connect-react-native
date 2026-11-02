@@ -82,7 +82,7 @@ export default function AppointmentsScreen() {
             </View>
             <Text style={styles.emptyTitle}>Nothing booked yet</Text>
             <Text style={styles.emptyBody}>Reserve your first 15-minute visit with one of our doctors.</Text>
-            <Pressable style={styles.book} onPress={() => router.push("/doctors")}>
+            <Pressable style={[styles.book, styles.emptyBook]} onPress={() => router.push("/doctors")}>
               <Text style={styles.bookText}>Choose a doctor</Text>
             </Pressable>
           </View>
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   bookText: { fontFamily: fonts.sansBold, color: colors.primaryInk, fontSize: 14 },
+  emptyBook: { alignSelf: "center" },
   empty: {
     borderRadius: 28,
     borderWidth: 1,
