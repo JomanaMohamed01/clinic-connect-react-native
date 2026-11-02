@@ -99,6 +99,8 @@ export default function ReceptionScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} tintColor={colors.primary} />}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <Text style={styles.title}>{isToday ? "Today's reservations" : "Reservations"}</Text>
         <Text style={styles.sub}>{formatLongDate(selectedDate)}</Text>

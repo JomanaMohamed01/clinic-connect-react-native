@@ -95,7 +95,12 @@ export default function BookScreen() {
     <View style={styles.root}>
       <AppHeader />
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <Pressable onPress={() => router.push("/doctors")} style={styles.back}>
             <ArrowLeft color={colors.muted} size={16} />
             <Text style={styles.backText}>Choose a different doctor</Text>

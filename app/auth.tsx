@@ -136,6 +136,8 @@ export default function AuthScreen() {
       <View style={styles.blobBottom} />
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={[
             styles.scroll,
             { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 28 },

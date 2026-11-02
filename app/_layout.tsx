@@ -43,6 +43,15 @@ export default function RootLayout() {
     style.textContent =
       "input, textarea, select, input:focus, textarea:focus, select:focus, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none !important; outline-width: 0 !important; box-shadow: none !important; }";
     document.head.appendChild(style);
+
+    const scrollbarId = "hide-scrollbars";
+    if (!document.getElementById(scrollbarId)) {
+      const scrollbarStyle = document.createElement("style");
+      scrollbarStyle.id = scrollbarId;
+      scrollbarStyle.textContent =
+        "html, body, * { scrollbar-width: none !important; -ms-overflow-style: none !important; } *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }";
+      document.head.appendChild(scrollbarStyle);
+    }
   }, []);
 
   if (!fontsLoaded) return null;

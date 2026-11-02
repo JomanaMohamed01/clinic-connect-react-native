@@ -19,7 +19,11 @@ export default function DoctorsScreen() {
   return (
     <View style={styles.root}>
       <AppHeader />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <Text style={styles.step}>Step 1 of 3</Text>
         <Text style={styles.title}>Choose your doctor</Text>
         <Text style={styles.sub}>Every visit is 15 minutes. Pick the specialist that fits you.</Text>

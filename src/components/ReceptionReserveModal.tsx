@@ -130,6 +130,8 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
             paddingHorizontal: 20,
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
           <Text style={styles.title}>Reserve appointment</Text>
           <Text style={styles.sub}>Book a walk-in patient. Their details are stored on the reservation.</Text>
