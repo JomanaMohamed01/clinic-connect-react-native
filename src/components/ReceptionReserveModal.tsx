@@ -104,7 +104,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
     if (isFriday(date)) return showToast("Fridays are closed.", "error");
     if (!time) return showToast("Pick an available time.", "error");
     if (!firstName.trim() || !lastName.trim()) return showToast("First and last name are required.", "error");
-    if (!ageNum || ageNum <= 0 || ageNum > 150) return showToast("Enter a valid age.", "error");
+    if (!ageNum || ageNum <= 0 || ageNum > 150) return showToast("Please enter the age of the patient", "error");
 
     setSubmitting(true);
     try {
@@ -131,140 +131,140 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !submitting && onClose()}>
       <View style={styles.root}>
-      <KeyboardAvoidingView
-        style={styles.root}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={{
-            paddingTop: insets.top + 16,
-            paddingBottom: insets.bottom + 28,
-            paddingHorizontal: 20,
-          }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
+        <KeyboardAvoidingView
+          style={styles.root}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Text style={styles.title}>Reserve appointment</Text>
-          <Text style={styles.sub}>Book a walk-in patient. Their details are stored on the reservation.</Text>
+          <ScrollView
+            contentContainerStyle={{
+              paddingTop: insets.top + 16,
+              paddingBottom: insets.bottom + 28,
+              paddingHorizontal: 20,
+            }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Text style={styles.title}>Reserve appointment</Text>
+            <Text style={styles.sub}>Book a walk-in patient. Their details are stored on the reservation.</Text>
 
-          <RequiredLabel text="Doctor" />
-          <View style={styles.doctorGrid}>
-            {DOCTORS.map((doctor) => {
-              const active = doctorId === doctor.id;
-              return (
-                <Pressable
-                  key={doctor.id}
-                  onPress={() => {
-                    setDoctorId(doctor.id);
-                    setTime(null);
-                  }}
-                  style={[styles.doctorCard, active && styles.doctorActive]}
-                >
-                  <Text style={[styles.doctorName, active && styles.onPrimary]}>{doctor.name}</Text>
-                  <Text style={[styles.doctorSpecialty, active && styles.onPrimarySoft]}>{doctor.specialty}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {doctorId ? (
-            <>
-              <View style={styles.sectionLabel}>
-                <Calendar color={colors.primary} size={16} />
-                <RequiredLabel text="Date" />
-              </View>
-              <Pressable style={styles.dateButton} onPress={() => setShowCalendar((open) => !open)}>
-                <Calendar color={colors.muted} size={16} />
-                <Text style={styles.dateText}>{date ? formatLongDate(date) : "Choose a date"}</Text>
-              </Pressable>
-              {showCalendar ? (
-                <MonthCalendar
-                  selected={date}
-                  onSelect={(next) => {
-                    setDate(next);
-                    setTime(null);
-                    setShowCalendar(false);
-                  }}
-                />
-              ) : null}
-
-              <View style={styles.sectionLabel}>
-                <Clock color={colors.primary} size={16} />
-                <RequiredLabel text="Time" />
-                {loadingSlots ? <Text style={styles.hint}>Loading…</Text> : null}
-              </View>
-              {date && isFriday(date) ? (
-                <Text style={styles.hint}>Clinic is closed on Fridays.</Text>
-              ) : freeSlots.length === 0 ? (
-                <Text style={styles.hint}>No open slots on this date.</Text>
-              ) : (
-                <View style={styles.slotGrid}>
-                  {freeSlots.map((slot) => {
-                    const active = time === slot.time;
-                    return (
-                      <Pressable
-                        key={slot.iso}
-                        onPress={() => setTime(slot.time)}
-                        style={[styles.slot, active && styles.slotActive]}
-                      >
-                        <Text style={[styles.slotText, active && styles.onPrimary]}>{slot.time}</Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              )}
-            </>
-          ) : null}
-
-          <View style={styles.details}>
-            <Text style={styles.detailsTitle}>Patient details</Text>
-            <View style={styles.pair}>
-              <Field label="First name" value={firstName} onChangeText={setFirstName} />
-              <Field label="Last name" value={lastName} onChangeText={setLastName} />
-            </View>
-            <Field label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" />
-            <RequiredLabel text="Gender" />
-            <View style={styles.genderRow}>
-              {(["female", "male", "other"] as const).map((option) => {
-                const active = gender === option;
+            <RequiredLabel text="Doctor" />
+            <View style={styles.doctorGrid}>
+              {DOCTORS.map((doctor) => {
+                const active = doctorId === doctor.id;
                 return (
                   <Pressable
-                    key={option}
-                    onPress={() => setGender(option)}
-                    style={[styles.gender, active && styles.slotActive]}
+                    key={doctor.id}
+                    onPress={() => {
+                      setDoctorId(doctor.id);
+                      setTime(null);
+                    }}
+                    style={[styles.doctorCard, active && styles.doctorActive]}
                   >
-                    <Text style={[styles.genderText, active && styles.onPrimary]}>{option}</Text>
+                    <Text style={[styles.doctorName, active && styles.onPrimary]}>{doctor.name}</Text>
+                    <Text style={[styles.doctorSpecialty, active && styles.onPrimarySoft]}>{doctor.specialty}</Text>
                   </Pressable>
                 );
               })}
             </View>
-            <Text style={styles.label}>Notes (optional)</Text>
-            <TextInput
-              value={notes}
-              onChangeText={setNotes}
-              multiline
-              style={[styles.input, styles.notes]}
-              placeholder="Anything the doctor should know?"
-              placeholderTextColor={colors.muted}
-            />
-          </View>
 
-          <View style={styles.footer}>
-            <Pressable disabled={submitting} onPress={onClose} style={styles.cancel}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </Pressable>
-            <View style={{ flex: 1 }}>
-              <GradientButton
-                label={submitting ? "Saving…" : "Confirm reservation"}
-                onPress={() => void onSubmit()}
-                loading={submitting}
+            {doctorId ? (
+              <>
+                <View style={styles.sectionLabel}>
+                  <Calendar color={colors.primary} size={16} />
+                  <RequiredLabel text="Date" />
+                </View>
+                <Pressable style={styles.dateButton} onPress={() => setShowCalendar((open) => !open)}>
+                  <Calendar color={colors.muted} size={16} />
+                  <Text style={styles.dateText}>{date ? formatLongDate(date) : "Choose a date"}</Text>
+                </Pressable>
+                {showCalendar ? (
+                  <MonthCalendar
+                    selected={date}
+                    onSelect={(next) => {
+                      setDate(next);
+                      setTime(null);
+                      setShowCalendar(false);
+                    }}
+                  />
+                ) : null}
+
+                <View style={styles.sectionLabel}>
+                  <Clock color={colors.primary} size={16} />
+                  <RequiredLabel text="Time" />
+                  {loadingSlots ? <Text style={styles.hint}>Loading…</Text> : null}
+                </View>
+                {date && isFriday(date) ? (
+                  <Text style={styles.hint}>Clinic is closed on Fridays.</Text>
+                ) : freeSlots.length === 0 ? (
+                  <Text style={styles.hint}>No open slots on this date.</Text>
+                ) : (
+                  <View style={styles.slotGrid}>
+                    {freeSlots.map((slot) => {
+                      const active = time === slot.time;
+                      return (
+                        <Pressable
+                          key={slot.iso}
+                          onPress={() => setTime(slot.time)}
+                          style={[styles.slot, active && styles.slotActive]}
+                        >
+                          <Text style={[styles.slotText, active && styles.onPrimary]}>{slot.time}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </>
+            ) : null}
+
+            <View style={styles.details}>
+              <Text style={styles.detailsTitle}>Patient details</Text>
+              <View style={styles.pair}>
+                <Field label="First name" value={firstName} onChangeText={setFirstName} />
+                <Field label="Last name" value={lastName} onChangeText={setLastName} />
+              </View>
+              <Field label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" />
+              <RequiredLabel text="Gender" />
+              <View style={styles.genderRow}>
+                {(["female", "male", "other"] as const).map((option) => {
+                  const active = gender === option;
+                  return (
+                    <Pressable
+                      key={option}
+                      onPress={() => setGender(option)}
+                      style={[styles.gender, active && styles.slotActive]}
+                    >
+                      <Text style={[styles.genderText, active && styles.onPrimary]}>{option}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Text style={styles.label}>Notes (optional)</Text>
+              <TextInput
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                style={[styles.input, styles.notes]}
+                placeholder="Anything the doctor should know?"
+                placeholderTextColor={colors.muted}
               />
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-      <ToastBanner />
+
+            <View style={styles.footer}>
+              <Pressable disabled={submitting} onPress={onClose} style={styles.cancel}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </Pressable>
+              <View style={{ flex: 1 }}>
+                <GradientButton
+                  label={submitting ? "Saving…" : "Confirm reservation"}
+                  onPress={() => void onSubmit()}
+                  loading={submitting}
+                />
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <ToastBanner />
       </View>
     </Modal>
   );
