@@ -156,11 +156,11 @@ export default function BookScreen() {
 
           <View style={[styles.details, shadow]}>
             <Text style={styles.detailsTitle}>Your details</Text>
-            <Text style={styles.label}>First name</Text>
+            <RequiredLabel text="First name" />
             <TextInput value={firstName} onChangeText={setFirstName} style={styles.input} placeholderTextColor={colors.muted} />
-            <Text style={styles.label}>Last name</Text>
+            <RequiredLabel text="Last name" />
             <TextInput value={lastName} onChangeText={setLastName} style={styles.input} placeholderTextColor={colors.muted} />
-            <Text style={styles.label}>Age</Text>
+            <RequiredLabel text="Age" />
             <TextInput
               value={age}
               onChangeText={setAge}
@@ -168,7 +168,7 @@ export default function BookScreen() {
               style={styles.input}
               placeholderTextColor={colors.muted}
             />
-            <Text style={styles.label}>Gender</Text>
+            <RequiredLabel text="Gender" />
             <View style={styles.genderRow}>
               {(["female", "male", "other"] as const).map((option) => {
                 const active = gender === option;
@@ -203,6 +203,14 @@ export default function BookScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
+  );
+}
+
+function RequiredLabel({ text }: { text: string }) {
+  return (
+    <Text style={styles.label}>
+      {text} <Text style={styles.required}>*</Text>
+    </Text>
   );
 }
 
@@ -267,6 +275,7 @@ const styles = StyleSheet.create({
   },
   detailsTitle: { fontFamily: fonts.display, fontSize: 22, color: colors.ink, marginBottom: 8 },
   label: { fontFamily: fonts.sansMedium, color: colors.ink, marginBottom: 6, marginTop: 8 },
+  required: { color: colors.danger },
   input: {
     height: 48,
     borderRadius: 14,
