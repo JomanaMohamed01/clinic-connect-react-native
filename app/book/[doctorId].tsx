@@ -59,7 +59,8 @@ export default function BookScreen() {
     if (!time) return showToast("Please pick a time.", "error");
     if (!date || !dateKey) return showToast("Please pick a date.", "error");
     if (isFriday(date)) return showToast("Fridays are closed — please pick another day.", "error");
-    if (!firstName.trim() || !lastName.trim()) return showToast("Please enter your first and last name.", "error");
+    if (!lastName.trim()) return showToast("Please enter your last name", "error");
+    if (!firstName.trim()) return showToast("Please enter your first name", "error");
     const ageNum = Number(age);
     if (!ageNum || ageNum <= 0 || ageNum > 120) return showToast("Please enter your age", "error");
     if (isSlotTaken(rows, doctor.id, dateKey, time)) {
