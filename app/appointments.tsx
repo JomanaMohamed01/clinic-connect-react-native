@@ -128,7 +128,7 @@ export default function AppointmentsScreen() {
       <ConfirmModal
         visible={!!pending}
         title="Cancel this appointment?"
-        message="This can’t be undone. The time slot will free up for another patient."
+        message="This can't be undone, do you want to delete your appointment?"
         confirmLabel="Yes, cancel"
         cancelLabel="Keep it"
         destructive
