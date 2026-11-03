@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Calendar, LogOut, Stethoscope, UserX } from "lucide-react-native";
+import { Calendar, Home, LogOut, Stethoscope, UserX } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, fonts } from "@/constants/theme";
 import { ConfirmModal } from "@/components/ConfirmModal";
@@ -45,6 +45,18 @@ export function AppHeader() {
       <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
           <Pressable style={[styles.menu, { top: insets.top + 62 }]}>
+            <Pressable
+              style={styles.item}
+              onPress={() => {
+                setMenuOpen(false);
+                router.push("/doctors");
+              }}
+            >
+              <View style={[styles.itemIcon, { backgroundColor: "#E7F0E8" }]}>
+                <Home color={colors.sageInk} size={16} />
+              </View>
+              <Text style={styles.itemText}>Home</Text>
+            </Pressable>
             <Pressable
               style={styles.item}
               onPress={() => {
