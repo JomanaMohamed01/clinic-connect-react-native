@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { CalendarPlus, Clock, Trash2, User } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
@@ -17,6 +17,7 @@ export default function AppointmentsScreen() {
   const [items, setItems] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -42,14 +43,18 @@ export default function AppointmentsScreen() {
   if (isReception) return <Redirect href="/reception" />;
 
   async function confirmCancel() {
-    if (!pending) return;
+    if (!pending || cancelling) return;
+    const id = pending;
+    setPending(null);
+    setCancelling(true);
     try {
-      await cancelAppointment(pending);
-      setPending(null);
+      await cancelAppointment(id);
       showToast("Appointment cancelled");
       await load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Could not cancel appointment", "error");
+    } finally {
+      setCancelling(false);
     }
   }
 
@@ -135,12 +140,37 @@ export default function AppointmentsScreen() {
         onCancel={() => setPending(null)}
         onConfirm={() => void confirmCancel()}
       />
+      {cancelling ? (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Cancelling appointment</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 9999,
+    elevation: 9999,
+    backgroundColor: colors.background,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 14,
+    ...(Platform.OS === "web" ? { position: "fixed" as const } : null),
+  },
+  loadingText: {
+    fontFamily: fonts.sansMedium,
+    color: colors.ink,
+    fontSize: 16,
+  },
   content: { padding: 20, paddingBottom: 40 },
   headingRow: { marginBottom: 12 },
   title: { fontFamily: fonts.display, fontSize: 36, color: colors.ink },
