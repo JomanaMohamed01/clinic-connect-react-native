@@ -109,7 +109,7 @@ export default function AppointmentsScreen() {
                     <View style={styles.meta}>
                       <User color={colors.muted} size={14} />
                       <Text style={styles.metaText}>
-                        {item.firstName} {item.lastName}, {item.age}
+                        {item.firstName} {item.lastName}, {item.age === 1 ? "1 year" : `${item.age} years`}
                       </Text>
                     </View>
                     {item.notes ? <Text style={styles.notes}>“{item.notes}”</Text> : null}
