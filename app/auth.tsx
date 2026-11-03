@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -84,6 +86,16 @@ export default function AuthScreen() {
   }
 
   async function onSubmit() {
+    const inputState = TextInput.State as {
+      currentlyFocusedInput?: () => unknown;
+      blurTextInput?: (input: unknown) => void;
+    };
+    const focused = inputState.currentlyFocusedInput?.();
+    if (focused) inputState.blurTextInput?.(focused);
+    Keyboard.dismiss();
+    if (Platform.OS === "web" && typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     const nextErrors: FieldErrors = {};
     if (mode === "signup" && !name.trim()) nextErrors.name = true;
     if (!email.trim()) nextErrors.email = "empty";
@@ -131,6 +143,7 @@ export default function AuthScreen() {
   }
 
   return (
+    <View style={styles.root}>
     <LinearGradient colors={["#F8EFE6", "#F6E4D8", "#E7F0E8"]} style={styles.root}>
       <View style={styles.blobTop} />
       <View style={styles.blobBottom} />
@@ -272,7 +285,7 @@ export default function AuthScreen() {
               <GradientButton
                 label={mode === "signin" ? "Sign in" : "Create account"}
                 onPress={() => void onSubmit()}
-                loading={submitting}
+                disabled={submitting}
               />
             </View>
             <Text style={styles.footer}>Your appointments are saved securely to your clinic account.</Text>
@@ -280,6 +293,13 @@ export default function AuthScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
+    {submitting ? (
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>{mode === "signin" ? "Signing in..." : "Signing up..."}</Text>
+      </View>
+    ) : null}
+    </View>
   );
 }
 
@@ -319,6 +339,25 @@ function Field({
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 9999,
+    elevation: 9999,
+    backgroundColor: colors.background,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 14,
+    ...(Platform.OS === "web" ? { position: "fixed" as const } : null),
+  },
+  loadingText: {
+    fontFamily: fonts.sansMedium,
+    color: colors.ink,
+    fontSize: 16,
+  },
   blobTop: {
     position: "absolute",
     top: -80,
