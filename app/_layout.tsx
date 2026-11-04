@@ -16,6 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
+import { AccountMenuProvider } from "@/components/AppHeader";
 import { ToastBanner } from "@/components/ToastBanner";
 import { shouldOpenAppointmentsInstantly } from "@/lib/appointmentNotice";
 import { ClinicProvider } from "@/providers/ClinicProvider";
@@ -61,22 +62,24 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaProvider>
         <ClinicProvider>
-          <StatusBar style="dark" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.background },
-              animation: "fade",
-            }}
-          >
-            <Stack.Screen
-              name="appointments"
-              options={() => ({
-                animation: shouldOpenAppointmentsInstantly() ? "none" : "fade",
-              })}
-            />
-          </Stack>
-          <ToastBanner />
+          <AccountMenuProvider>
+            <StatusBar style="dark" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: colors.background },
+                animation: "fade",
+              }}
+            >
+              <Stack.Screen
+                name="appointments"
+                options={() => ({
+                  animation: shouldOpenAppointmentsInstantly() ? "none" : "fade",
+                })}
+              />
+            </Stack>
+            <ToastBanner />
+          </AccountMenuProvider>
         </ClinicProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

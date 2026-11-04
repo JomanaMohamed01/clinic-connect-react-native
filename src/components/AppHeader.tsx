@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Calendar, Home, LogOut, Stethoscope, UserX } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,14 +7,21 @@ import { colors, fonts } from "@/constants/theme";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { useClinic } from "@/providers/ClinicProvider";
 
-export function AppHeader() {
+const AccountMenuContext = createContext<() => void>(() => {});
+
+export function useAccountMenu() {
+  return useContext(AccountMenuContext);
+}
+
+export function AccountMenuProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { user, signOut, deleteAccount, showToast } = useClinic();
+  const { signOut, deleteAccount, showToast } = useClinic();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const firstName = user?.name.split(" ")[0];
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   async function onDelete() {
     setDeleting(true);
@@ -31,24 +38,16 @@ export function AppHeader() {
   }
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top }]}>
-      <Pressable style={styles.brand} onPress={() => setMenuOpen(true)}>
-        <View style={styles.mark}>
-          <Stethoscope color={colors.primaryInk} size={20} />
-        </View>
-        <View>
-          <Text style={styles.title}>Bloom Clinic</Text>
-          {firstName ? <Text style={styles.hello}>Hi, {firstName}</Text> : null}
-        </View>
-      </Pressable>
-
-      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
-          <Pressable style={[styles.menu, { top: insets.top + 62 }]}>
+    <AccountMenuContext.Provider value={openMenu}>
+      {children}
+      {menuOpen ? (
+        <View style={styles.backdrop} pointerEvents="box-none">
+          <Pressable style={styles.backdropPress} onPress={closeMenu} />
+          <View style={[styles.menu, { top: insets.top + 62 }]}>
             <Pressable
               style={styles.item}
               onPress={() => {
-                setMenuOpen(false);
+                closeMenu();
                 router.push("/doctors");
               }}
             >
@@ -60,7 +59,7 @@ export function AppHeader() {
             <Pressable
               style={styles.item}
               onPress={() => {
-                setMenuOpen(false);
+                closeMenu();
                 router.push("/appointments");
               }}
             >
@@ -72,7 +71,7 @@ export function AppHeader() {
             <Pressable
               style={styles.item}
               onPress={() => {
-                setMenuOpen(false);
+                closeMenu();
                 void signOut().then(() => router.replace("/auth"));
               }}
             >
@@ -85,7 +84,7 @@ export function AppHeader() {
             <Pressable
               style={styles.item}
               onPress={() => {
-                setMenuOpen(false);
+                closeMenu();
                 setConfirmDelete(true);
               }}
             >
@@ -94,10 +93,9 @@ export function AppHeader() {
               </View>
               <Text style={[styles.itemText, styles.dangerText]}>Delete account</Text>
             </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
-
+          </View>
+        </View>
+      ) : null}
       <ConfirmModal
         visible={confirmDelete}
         title="Delete your account?"
@@ -109,6 +107,27 @@ export function AppHeader() {
         onCancel={() => !deleting && setConfirmDelete(false)}
         onConfirm={() => void onDelete()}
       />
+    </AccountMenuContext.Provider>
+  );
+}
+
+export function AppHeader() {
+  const openMenu = useAccountMenu();
+  const insets = useSafeAreaInsets();
+  const { user } = useClinic();
+  const firstName = user?.name.split(" ")[0];
+
+  return (
+    <View style={[styles.header, { paddingTop: insets.top }]}>
+      <Pressable style={styles.brand} onPress={openMenu}>
+        <View style={styles.mark}>
+          <Stethoscope color={colors.primaryInk} size={20} />
+        </View>
+        <View>
+          <Text style={styles.title}>Bloom Clinic</Text>
+          {firstName ? <Text style={styles.hello}>Hi, {firstName}</Text> : null}
+        </View>
+      </Pressable>
     </View>
   );
 }
@@ -145,7 +164,20 @@ const styles = StyleSheet.create({
     color: colors.muted,
   },
   backdrop: {
-    flex: 1,
+    position: Platform.OS === "web" ? "fixed" : "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 1100,
+    elevation: 24,
+  },
+  backdropPress: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   menu: {
     position: "absolute",
