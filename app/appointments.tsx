@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { BootScreen } from "@/components/BootScreen";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { colors, fonts, shadow } from "@/constants/theme";
+import { hasAppointmentNotice, takeAppointmentNotice } from "@/lib/appointmentNotice";
 import { cancelAppointment, getAppointments } from "@/lib/api";
 import { formatMonthShort, formatWeekdayShort, parseDateKey } from "@/lib/format";
 import type { Appointment } from "@/lib/types";
@@ -36,6 +37,25 @@ export default function AppointmentsScreen() {
     useCallback(() => {
       void load();
     }, [load]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasAppointmentNotice()) return;
+      let cancelled = false;
+      // The banner is drawn above the navigator, so it must wait out the fade.
+      // Showing it as soon as this screen mounts puts it on top of the booking page.
+      const timer = setTimeout(() => {
+        if (cancelled) return;
+        const message = takeAppointmentNotice();
+        if (!message) return;
+        showToast(message);
+      }, Platform.OS === "web" ? 50 : 1100);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }, [showToast]),
   );
 
   if (!ready) return <BootScreen />;

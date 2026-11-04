@@ -17,6 +17,7 @@ import { DoctorAvatar } from "@/components/DoctorAvatar";
 import { GradientButton } from "@/components/GradientButton";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { colors, fonts, shadow } from "@/constants/theme";
+import { queueAppointmentNotice } from "@/lib/appointmentNotice";
 import { addAppointment, fetchDoctorBookings, isSlotTaken } from "@/lib/api";
 import { generateTimeSlots, getDoctor, isFriday } from "@/lib/doctors";
 import { formatLongDate, toDateKey } from "@/lib/format";
@@ -81,7 +82,7 @@ export default function BookScreen() {
         gender,
         notes: notes.trim(),
       });
-      showToast("Appointment confirmed!");
+      queueAppointmentNotice("Appointment confirmed!");
       router.replace("/appointments");
     } catch (err) {
       const latest = await fetchDoctorBookings(doctor.id);
