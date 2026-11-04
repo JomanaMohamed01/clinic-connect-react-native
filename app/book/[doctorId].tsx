@@ -181,7 +181,7 @@ export default function BookScreen() {
             />
             <RequiredLabel text="Gender" />
             <View style={styles.genderRow}>
-              {(["female", "male", "other"] as const).map((option) => {
+              {(["female", "male"] as const).map((option) => {
                 const active = gender === option;
                 return (
                   <Pressable

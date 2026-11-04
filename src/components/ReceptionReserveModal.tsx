@@ -227,7 +227,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
               <Field label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" />
               <RequiredLabel text="Gender" />
               <View style={styles.genderRow}>
-                {(["female", "male", "other"] as const).map((option) => {
+                {(["female", "male"] as const).map((option) => {
                   const active = gender === option;
                   return (
                     <Pressable
