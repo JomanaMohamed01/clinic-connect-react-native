@@ -17,6 +17,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 import { ToastBanner } from "@/components/ToastBanner";
+import { shouldOpenAppointmentsInstantly } from "@/lib/appointmentNotice";
 import { ClinicProvider } from "@/providers/ClinicProvider";
 
 SplashScreen.preventAutoHideAsync();
@@ -67,7 +68,14 @@ export default function RootLayout() {
               contentStyle: { backgroundColor: colors.background },
               animation: "fade",
             }}
-          />
+          >
+            <Stack.Screen
+              name="appointments"
+              options={() => ({
+                animation: shouldOpenAppointmentsInstantly() ? "none" : "fade",
+              })}
+            />
+          </Stack>
           <ToastBanner />
         </ClinicProvider>
       </SafeAreaProvider>

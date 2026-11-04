@@ -1,12 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useIsFocused, useRouter } from "expo-router";
 import { CalendarPlus, Clock, Trash2, User } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
 import { BootScreen } from "@/components/BootScreen";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { colors, fonts, shadow } from "@/constants/theme";
-import { hasAppointmentNotice, takeAppointmentNotice } from "@/lib/appointmentNotice";
+import { clearInstantAppointmentsOpen, hasAppointmentNotice, takeAppointmentNotice } from "@/lib/appointmentNotice";
 import { cancelAppointment, getAppointments } from "@/lib/api";
 import { formatMonthShort, formatWeekdayShort, parseDateKey } from "@/lib/format";
 import type { Appointment } from "@/lib/types";
@@ -14,6 +14,7 @@ import { useClinic } from "@/providers/ClinicProvider";
 
 export default function AppointmentsScreen() {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const { ready, user, isReception, showToast } = useClinic();
   const [items, setItems] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,23 +40,19 @@ export default function AppointmentsScreen() {
     }, [load]),
   );
 
+  useEffect(() => {
+    if (!isFocused || !hasAppointmentNotice()) return;
+    const frame = requestAnimationFrame(() => {
+      const message = takeAppointmentNotice();
+      if (message) showToast(message);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isFocused, showToast]);
+
   useFocusEffect(
     useCallback(() => {
-      if (!hasAppointmentNotice()) return;
-      let cancelled = false;
-      // The banner is drawn above the navigator, so it must wait out the fade.
-      // Showing it as soon as this screen mounts puts it on top of the booking page.
-      const timer = setTimeout(() => {
-        if (cancelled) return;
-        const message = takeAppointmentNotice();
-        if (!message) return;
-        showToast(message);
-      }, Platform.OS === "web" ? 50 : 1100);
-      return () => {
-        cancelled = true;
-        clearTimeout(timer);
-      };
-    }, [showToast]),
+      return () => clearInstantAppointmentsOpen();
+    }, []),
   );
 
   if (!ready) return <BootScreen />;

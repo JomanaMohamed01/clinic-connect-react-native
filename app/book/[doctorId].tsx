@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { ArrowLeft, Calendar, Check, Clock } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
 import { BootScreen } from "@/components/BootScreen";
@@ -26,6 +26,7 @@ import { useClinic } from "@/providers/ClinicProvider";
 
 export default function BookScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { doctorId } = useLocalSearchParams<{ doctorId: string }>();
   const doctor = doctorId ? getDoctor(doctorId) : undefined;
   const { ready, user, isReception, showToast } = useClinic();
@@ -83,6 +84,7 @@ export default function BookScreen() {
         notes: notes.trim(),
       });
       queueAppointmentNotice("Appointment confirmed!");
+      navigation.setOptions({ animation: "none" });
       router.replace("/appointments");
     } catch (err) {
       const latest = await fetchDoctorBookings(doctor.id);
