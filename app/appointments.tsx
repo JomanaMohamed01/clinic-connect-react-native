@@ -64,15 +64,19 @@ export default function AppointmentsScreen() {
     const id = pending;
     setPending(null);
     setCancelling(true);
+    let notice: { message: string; tone?: "error" } = { message: "Appointment cancelled" };
     try {
       await cancelAppointment(id);
-      showToast("Appointment cancelled");
       await load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not cancel appointment", "error");
+      notice = {
+        message: err instanceof Error ? err.message : "Could not cancel appointment",
+        tone: "error",
+      };
     } finally {
       setCancelling(false);
     }
+    showToast(notice.message, notice.tone);
   }
 
   return (
