@@ -20,6 +20,7 @@ import { BootScreen } from "@/components/BootScreen";
 import { GradientButton } from "@/components/GradientButton";
 import { colors, fonts, shadow } from "@/constants/theme";
 import { RECEPTION_PASSWORD, isReceptionEmail } from "@/lib/api";
+import { openDoctorsInstantly } from "@/lib/appointmentNotice";
 import {
   EMPTY_FIELD_MESSAGE,
   INVALID_EMAIL_MESSAGE,
@@ -135,6 +136,7 @@ export default function AuthScreen() {
         return;
       }
       const firstName = signedIn.name.trim().split(" ")[0];
+      openDoctorsInstantly();
       showToast(`Welcome back, ${firstName}`);
       router.replace("/doctors");
     } catch (err) {

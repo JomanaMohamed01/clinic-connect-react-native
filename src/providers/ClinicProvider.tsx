@@ -69,20 +69,21 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
 
   const applySession = useCallback(async (session: Parameters<typeof userFromSession>[0]) => {
     const nextUser = userFromSession(session);
-    setUser(nextUser);
     if (!nextUser) {
+      setUser(null);
       setIsReception(false);
       return;
     }
-    if (isReceptionEmail(nextUser.email)) {
-      setIsReception(true);
-      return;
+    let reception = isReceptionEmail(nextUser.email);
+    if (!reception) {
+      try {
+        reception = await checkReceptionRole();
+      } catch {
+        reception = false;
+      }
     }
-    try {
-      setIsReception(await checkReceptionRole());
-    } catch {
-      setIsReception(false);
-    }
+    setUser(nextUser);
+    setIsReception(reception);
   }, []);
 
   useEffect(() => {

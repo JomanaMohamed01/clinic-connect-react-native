@@ -1,16 +1,24 @@
+import { useCallback } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
 import { BootScreen } from "@/components/BootScreen";
 import { DoctorAvatar } from "@/components/DoctorAvatar";
 import { colors, fonts, shadow } from "@/constants/theme";
+import { clearInstantDoctorsOpen } from "@/lib/appointmentNotice";
 import { DOCTORS } from "@/lib/doctors";
 import { useClinic } from "@/providers/ClinicProvider";
 
 export default function DoctorsScreen() {
   const router = useRouter();
   const { ready, user, isReception } = useClinic();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => clearInstantDoctorsOpen();
+    }, []),
+  );
 
   if (!ready) return <BootScreen />;
   if (!user) return <Redirect href="/auth" />;

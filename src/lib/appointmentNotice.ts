@@ -1,5 +1,18 @@
 let pendingMessage: string | null = null;
 let arriveInstantly = false;
+let doctorsArriveInstantly = false;
+
+export function openDoctorsInstantly() {
+  doctorsArriveInstantly = true;
+}
+
+export function shouldOpenDoctorsInstantly() {
+  return doctorsArriveInstantly;
+}
+
+export function clearInstantDoctorsOpen() {
+  doctorsArriveInstantly = false;
+}
 
 export function queueAppointmentNotice(message: string) {
   pendingMessage = message;

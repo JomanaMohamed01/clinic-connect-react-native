@@ -18,7 +18,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 import { AccountMenuProvider } from "@/components/AppHeader";
 import { ToastBanner } from "@/components/ToastBanner";
-import { shouldOpenAppointmentsInstantly } from "@/lib/appointmentNotice";
+import { shouldOpenAppointmentsInstantly, shouldOpenDoctorsInstantly } from "@/lib/appointmentNotice";
 import { ClinicProvider } from "@/providers/ClinicProvider";
 
 SplashScreen.preventAutoHideAsync();
@@ -71,6 +71,12 @@ export default function RootLayout() {
                 animation: "fade",
               }}
             >
+              <Stack.Screen
+                name="doctors"
+                options={() => ({
+                  animation: shouldOpenDoctorsInstantly() ? "none" : "fade",
+                })}
+              />
               <Stack.Screen
                 name="appointments"
                 options={() => ({
