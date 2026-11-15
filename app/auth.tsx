@@ -128,13 +128,14 @@ export default function AuthScreen() {
       if (isReceptionEmail(trimmedEmail) && password !== RECEPTION_PASSWORD) {
         throw new Error("Invalid email or password.");
       }
-      const destination = await signIn(trimmedEmail, password);
-      if (destination === "reception") {
+      const signedIn = await signIn(trimmedEmail, password);
+      if (signedIn.destination === "reception") {
         showToast("Welcome, reception desk.");
         router.replace("/reception");
         return;
       }
-      showToast("Welcome back!");
+      const firstName = signedIn.name.trim().split(" ")[0];
+      showToast(`Welcome back, ${firstName}`);
       router.replace("/doctors");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Something went wrong", "error");

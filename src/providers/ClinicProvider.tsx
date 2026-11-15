@@ -116,11 +116,13 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
     if (isReceptionEmail(email)) {
       const session = await receptionSignInRequest(email, password);
       await applySession(session);
-      return "reception" as const;
+      return { destination: "reception" as const, name: "Reception Desk" };
     }
     const session = await signInRequest(email, password);
     await applySession(session);
-    return "patient" as const;
+    const sessionEmail = session.user.email ?? email;
+    const name = displayNameFromMetadata(sessionEmail, session.user.user_metadata);
+    return { destination: "patient" as const, name };
   }, [applySession]);
 
   const signUp = useCallback(async (name: string, email: string, password: string) => {
