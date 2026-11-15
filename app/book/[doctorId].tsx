@@ -20,7 +20,7 @@ import { colors, fonts, shadow } from "@/constants/theme";
 import { queueAppointmentNotice } from "@/lib/appointmentNotice";
 import { addAppointment, fetchDoctorBookings, isSlotTaken } from "@/lib/api";
 import { generateTimeSlots, getDoctor, isFriday } from "@/lib/doctors";
-import { formatLongDate, toDateKey } from "@/lib/format";
+import { formatLongDate, formatTime12h, toDateKey } from "@/lib/format";
 import type { BookingRow, Gender } from "@/lib/types";
 import { lettersOnly } from "@/lib/validation";
 import { useClinic } from "@/providers/ClinicProvider";
@@ -165,7 +165,7 @@ export default function BookScreen() {
                       style={[styles.slot, active && styles.slotActive, taken && styles.slotTaken]}
                     >
                       <Text style={[styles.slotText, active && styles.slotTextActive, taken && styles.slotTextTaken]}>
-                        {slot}
+                        {formatSlotLabel(slot)}
                       </Text>
                     </Pressable>
                   );
@@ -236,6 +236,13 @@ export default function BookScreen() {
   );
 }
 
+function formatSlotLabel(slot: string) {
+  const [hour, minute] = slot.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hour, minute, 0, 0);
+  return formatTime12h(date);
+}
+
 function RequiredLabel({ text }: { text: string }) {
   return (
     <Text style={styles.label}>
@@ -265,14 +272,16 @@ const styles = StyleSheet.create({
   sectionTitle: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 10, marginTop: 8 },
   sectionText: { fontFamily: fonts.display, fontSize: 20, color: colors.ink },
   sectionHint: { fontFamily: fonts.sans, color: colors.muted, fontSize: 12 },
-  slots: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 },
+  slots: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 8 },
   slot: {
-    width: "31%",
-    borderRadius: 14,
+    flexGrow: 1,
+    flexBasis: 104,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.card,
-    paddingVertical: 10,
+    paddingVertical: 11,
+    paddingHorizontal: 10,
     alignItems: "center",
   },
   slotActive: { backgroundColor: colors.primary, borderColor: colors.primary },
