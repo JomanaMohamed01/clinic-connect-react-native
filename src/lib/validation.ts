@@ -23,6 +23,10 @@ const ALLOWED_EMAIL_DOMAINS = new Set([
   "protonmail.com",
 ]);
 
+export function lettersOnly(value: string) {
+  return value.replace(/[0-9\u0660-\u0669\u06F0-\u06F9]/g, "");
+}
+
 export function isAllowedSignupEmail(email: string) {
   const trimmed = email.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return false;

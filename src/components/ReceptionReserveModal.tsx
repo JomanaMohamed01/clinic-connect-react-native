@@ -24,6 +24,7 @@ import {
   receptionCreateBooking,
 } from "@/lib/api";
 import type { Gender } from "@/lib/types";
+import { lettersOnly } from "@/lib/validation";
 import { useClinic } from "@/providers/ClinicProvider";
 
 type Props = {
@@ -227,8 +228,8 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
             <View style={styles.details}>
               <Text style={styles.detailsTitle}>Patient details</Text>
               <View style={styles.pair}>
-                <Field label="First name" value={firstName} onChangeText={setFirstName} />
-                <Field label="Last name" value={lastName} onChangeText={setLastName} />
+                <Field label="First name" value={firstName} onChangeText={(value) => setFirstName(lettersOnly(value))} />
+                <Field label="Last name" value={lastName} onChangeText={(value) => setLastName(lettersOnly(value))} />
               </View>
               <Field label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" />
               <RequiredLabel text="Gender" />

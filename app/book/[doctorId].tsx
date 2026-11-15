@@ -22,6 +22,7 @@ import { addAppointment, fetchDoctorBookings, isSlotTaken } from "@/lib/api";
 import { generateTimeSlots, getDoctor, isFriday } from "@/lib/doctors";
 import { formatLongDate, toDateKey } from "@/lib/format";
 import type { BookingRow, Gender } from "@/lib/types";
+import { lettersOnly } from "@/lib/validation";
 import { useClinic } from "@/providers/ClinicProvider";
 
 export default function BookScreen() {
@@ -175,9 +176,19 @@ export default function BookScreen() {
           <View style={[styles.details, shadow]}>
             <Text style={styles.detailsTitle}>Your details</Text>
             <RequiredLabel text="First name" />
-            <TextInput value={firstName} onChangeText={setFirstName} style={styles.input} placeholderTextColor={colors.muted} />
+            <TextInput
+              value={firstName}
+              onChangeText={(value) => setFirstName(lettersOnly(value))}
+              style={styles.input}
+              placeholderTextColor={colors.muted}
+            />
             <RequiredLabel text="Last name" />
-            <TextInput value={lastName} onChangeText={setLastName} style={styles.input} placeholderTextColor={colors.muted} />
+            <TextInput
+              value={lastName}
+              onChangeText={(value) => setLastName(lettersOnly(value))}
+              style={styles.input}
+              placeholderTextColor={colors.muted}
+            />
             <RequiredLabel text="Age" />
             <TextInput
               value={age}
