@@ -119,8 +119,10 @@ export default function BookScreen() {
 
           <View style={styles.sectionTitle}>
             <Calendar color={colors.primary} size={16} />
-            <Text style={styles.sectionText}>Pick a date</Text>
-            <Text style={styles.sectionHint}>(Fridays closed)</Text>
+            <Text style={styles.sectionText}>
+              Pick a date <Text style={styles.required}>*</Text>
+              <Text style={styles.sectionHint}> (Fridays closed)</Text>
+            </Text>
           </View>
           <Pressable style={styles.dateButton} onPress={() => setShowCalendar((open) => !open)}>
             <Calendar color={colors.muted} size={16} />
