@@ -24,7 +24,6 @@ export default function DoctorsScreen() {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
-        <Text style={styles.step}>Step 1 of 3</Text>
         <Text style={styles.title}>Choose your doctor</Text>
         <Text style={styles.sub}>Every visit is 15 minutes. Pick the specialist that fits you.</Text>
         <View style={styles.list}>
@@ -60,15 +59,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
-  step: {
-    fontFamily: fonts.sansBold,
-    color: colors.primary,
-    fontSize: 12,
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-  },
   title: {
-    marginTop: 8,
     fontFamily: fonts.display,
     fontSize: 36,
     color: colors.ink,
