@@ -16,7 +16,7 @@ import { colors, fonts } from "@/constants/theme";
 import { GradientButton } from "@/components/GradientButton";
 import { ToastBanner } from "@/components/ToastBanner";
 import { MonthCalendar } from "@/components/MonthCalendar";
-import { DOCTORS, buildSlotStartIso, isFriday, startOfDay } from "@/lib/doctors";
+import { DOCTORS, buildSlotStartIso, isFriday } from "@/lib/doctors";
 import { formatLongDate } from "@/lib/format";
 import {
   getFreeSlotsForDay,
@@ -36,7 +36,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   const insets = useSafeAreaInsets();
   const { showToast } = useClinic();
   const [doctorId, setDoctorId] = useState("");
-  const [date, setDate] = useState<Date | null>(startOfDay(new Date()));
+  const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [bookedIsos, setBookedIsos] = useState<Set<string>>(new Set());
   const [loadingSlots, setLoadingSlots] = useState(false);
@@ -56,7 +56,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   useEffect(() => {
     if (!visible) return;
     setDoctorId("");
-    setDate(startOfDay(new Date()));
+    setDate(null);
     setTime(null);
     setFirstName("");
     setLastName("");
@@ -190,30 +190,36 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
                   />
                 ) : null}
 
-                <View style={styles.sectionLabel}>
-                  <Clock color={colors.primary} size={16} />
-                  <RequiredLabel text="Time" />
-                  {loadingSlots ? <Text style={styles.hint}>Loading…</Text> : null}
-                </View>
-                {date && isFriday(date) ? (
-                  <Text style={styles.hint}>Clinic is closed on Fridays.</Text>
-                ) : freeSlots.length === 0 ? (
-                  <Text style={styles.hint}>No open slots on this date.</Text>
+                {date ? (
+                  <>
+                    <View style={styles.sectionLabel}>
+                      <Clock color={colors.primary} size={16} />
+                      <RequiredLabel text="Time" />
+                      {loadingSlots ? <Text style={styles.hint}>Loading…</Text> : null}
+                    </View>
+                    {isFriday(date) ? (
+                      <Text style={styles.hint}>Clinic is closed on Fridays.</Text>
+                    ) : freeSlots.length === 0 ? (
+                      <Text style={styles.hint}>No open slots on this date.</Text>
+                    ) : (
+                      <View style={styles.slotGrid}>
+                        {freeSlots.map((slot) => {
+                          const active = time === slot.time;
+                          return (
+                            <Pressable
+                              key={slot.iso}
+                              onPress={() => setTime(slot.time)}
+                              style={[styles.slot, active && styles.slotActive]}
+                            >
+                              <Text style={[styles.slotText, active && styles.onPrimary]}>{slot.time}</Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    )}
+                  </>
                 ) : (
-                  <View style={styles.slotGrid}>
-                    {freeSlots.map((slot) => {
-                      const active = time === slot.time;
-                      return (
-                        <Pressable
-                          key={slot.iso}
-                          onPress={() => setTime(slot.time)}
-                          style={[styles.slot, active && styles.slotActive]}
-                        >
-                          <Text style={[styles.slotText, active && styles.onPrimary]}>{slot.time}</Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
+                  <Text style={styles.hint}>Choose a date to see which times are already reserved.</Text>
                 )}
               </>
             ) : null}
