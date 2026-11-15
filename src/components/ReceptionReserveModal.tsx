@@ -46,7 +46,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState<Gender>("female");
+  const [gender, setGender] = useState<Gender | null>(null);
   const [notes, setNotes] = useState("");
 
   const freeSlots = useMemo(() => {
@@ -62,7 +62,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
     setFirstName("");
     setLastName("");
     setAge("");
-    setGender("female");
+    setGender(null);
     setNotes("");
     setBookedIsos(new Set());
     setShowCalendar(false);
@@ -97,6 +97,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
       !firstName.trim(),
       !lastName.trim(),
       !age.trim(),
+      !gender,
     ].filter(Boolean).length;
     if (unfilled >= 2) return showToast("Please fill in the remaining fields", "error");
 
@@ -107,6 +108,7 @@ export function ReceptionReserveModal({ visible, onClose, onBooked }: Props) {
     if (!lastName.trim()) return showToast("Please enter the last name of the patient", "error");
     if (!firstName.trim()) return showToast("Please enter the first name of the patient", "error");
     if (!ageNum || ageNum <= 0 || ageNum > 150) return showToast("Please enter the age of the patient", "error");
+    if (!gender) return showToast("Please choose the gender of the patient", "error");
 
     setSubmitting(true);
     try {

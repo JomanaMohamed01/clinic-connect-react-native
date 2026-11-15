@@ -38,7 +38,7 @@ export default function BookScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState<Gender>("female");
+  const [gender, setGender] = useState<Gender | null>(null);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -66,6 +66,7 @@ export default function BookScreen() {
     if (!firstName.trim()) return showToast("Please enter your first name", "error");
     const ageNum = Number(age);
     if (!ageNum || ageNum <= 0 || ageNum > 120) return showToast("Please enter your age", "error");
+    if (!gender) return showToast("Please choose your gender", "error");
     if (isSlotTaken(rows, doctor.id, dateKey, time)) {
       return showToast("That slot was just taken. Please pick another time.", "error");
     }
