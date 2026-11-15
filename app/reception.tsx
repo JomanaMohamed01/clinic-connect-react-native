@@ -31,6 +31,7 @@ export default function ReceptionScreen() {
   const [loading, setLoading] = useState(true);
   const [reserveOpen, setReserveOpen] = useState(false);
   const [pendingCancel, setPendingCancel] = useState<string | null>(null);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -87,9 +88,7 @@ export default function ReceptionScreen() {
         </View>
         <Pressable
           style={styles.signOut}
-          onPress={() => {
-            void signOut().then(() => router.replace("/auth"));
-          }}
+          onPress={() => setConfirmSignOut(true)}
         >
           <LogOut color={colors.ink} size={16} />
           <Text style={styles.signOutText}>Sign out</Text>
@@ -175,6 +174,18 @@ export default function ReceptionScreen() {
         visible={reserveOpen}
         onClose={() => setReserveOpen(false)}
         onBooked={() => void load()}
+      />
+      <ConfirmModal
+        visible={confirmSignOut}
+        title="Do you want to sign out?"
+        confirmLabel="Yes"
+        cancelLabel="No"
+        confirmFirst
+        onCancel={() => setConfirmSignOut(false)}
+        onConfirm={() => {
+          setConfirmSignOut(false);
+          void signOut().then(() => router.replace("/auth"));
+        }}
       />
       <ConfirmModal
         visible={!!pendingCancel}

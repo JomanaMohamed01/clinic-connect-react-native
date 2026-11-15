@@ -19,6 +19,7 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
   const { signOut, deleteAccount, showToast } = useClinic();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -72,7 +73,7 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
               style={styles.item}
               onPress={() => {
                 closeMenu();
-                void signOut().then(() => router.replace("/auth"));
+                setConfirmSignOut(true);
               }}
             >
               <View style={[styles.itemIcon, { backgroundColor: "#F3EBE4" }]}>
@@ -96,6 +97,18 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
           </View>
         </View>
       ) : null}
+      <ConfirmModal
+        visible={confirmSignOut}
+        title="Do you want to sign out?"
+        confirmLabel="Yes"
+        cancelLabel="No"
+        confirmFirst
+        onCancel={() => setConfirmSignOut(false)}
+        onConfirm={() => {
+          setConfirmSignOut(false);
+          void signOut().then(() => router.replace("/auth"));
+        }}
+      />
       <ConfirmModal
         visible={confirmDelete}
         title="Delete your account?"

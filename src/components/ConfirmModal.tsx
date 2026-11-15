@@ -4,11 +4,12 @@ import { colors, fonts, shadow } from "@/constants/theme";
 type Props = {
   visible: boolean;
   title: string;
-  message: string;
+  message?: string;
   confirmLabel: string;
   cancelLabel: string;
   destructive?: boolean;
   busy?: boolean;
+  confirmFirst?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -21,26 +22,33 @@ export function ConfirmModal({
   cancelLabel,
   destructive,
   busy,
+  confirmFirst,
   onConfirm,
   onCancel,
 }: Props) {
+  const cancelButton = (
+    <Pressable disabled={busy} onPress={onCancel} style={styles.cancel}>
+      <Text style={styles.cancelText}>{cancelLabel}</Text>
+    </Pressable>
+  );
+  const confirmButton = (
+    <Pressable
+      disabled={busy}
+      onPress={onConfirm}
+      style={[styles.confirm, destructive && styles.danger, busy && styles.busy]}
+    >
+      <Text style={styles.confirmText}>{confirmLabel}</Text>
+    </Pressable>
+  );
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <Pressable style={styles.backdrop} onPress={() => !busy && onCancel()}>
         <Pressable style={[styles.card, shadow]}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          {message ? <Text style={styles.message}>{message}</Text> : null}
           <View style={styles.actions}>
-            <Pressable disabled={busy} onPress={onCancel} style={styles.cancel}>
-              <Text style={styles.cancelText}>{cancelLabel}</Text>
-            </Pressable>
-            <Pressable
-              disabled={busy}
-              onPress={onConfirm}
-              style={[styles.confirm, destructive && styles.danger, busy && styles.busy]}
-            >
-              <Text style={styles.confirmText}>{confirmLabel}</Text>
-            </Pressable>
+            {confirmFirst ? confirmButton : cancelButton}
+            {confirmFirst ? cancelButton : confirmButton}
           </View>
         </Pressable>
       </Pressable>
