@@ -218,7 +218,7 @@ export default function AuthScreen() {
                 setEmail(value);
                 clearField("email");
               }}
-              placeholder="you@email.com"
+              placeholder={mode === "signin" ? "" : "you@email.com"}
               keyboardType="email-address"
               autoCapitalize="none"
               error={
@@ -239,7 +239,7 @@ export default function AuthScreen() {
                   clearField("password");
                 }}
                 secureTextEntry={!showPassword}
-                placeholder="••••••••"
+                placeholder={mode === "signin" ? "" : "••••••••"}
                 placeholderTextColor={colors.muted}
                 autoCapitalize="none"
                 style={[styles.passwordInput, webInputOutline]}
