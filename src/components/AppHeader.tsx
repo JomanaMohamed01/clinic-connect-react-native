@@ -1,13 +1,20 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Calendar, Home, LogOut, Stethoscope, UserX } from "lucide-react-native";
+import { Menu, Stethoscope, X } from "lucide-react-native";
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, fonts } from "@/constants/theme";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { useClinic } from "@/providers/ClinicProvider";
 
-const AccountMenuContext = createContext<() => void>(() => {});
+const MENU_MS = 280;
+const DRAWER_WIDTH = 300;
+
+const AccountMenuContext = createContext<{ toggleMenu: () => void; menuOpen: boolean }>({
+  toggleMenu: () => {},
+  menuOpen: false,
+});
 
 export function useAccountMenu() {
   return useContext(AccountMenuContext);
@@ -18,11 +25,37 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();
   const { signOut, deleteAccount, showToast } = useClinic();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const openMenu = useCallback(() => setMenuOpen(true), []);
+  const menuProgress = useSharedValue(0);
+  const toggleMenu = useCallback(() => setMenuOpen((open) => !open), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      setMenuMounted(true);
+      return;
+    }
+    if (!menuMounted) return;
+    menuProgress.value = withTiming(0, { duration: MENU_MS }, (finished) => {
+      if (finished) runOnJS(setMenuMounted)(false);
+    });
+  }, [menuOpen, menuMounted, menuProgress]);
+
+  useEffect(() => {
+    if (!menuMounted || !menuOpen) return;
+    menuProgress.value = withTiming(1, { duration: MENU_MS });
+  }, [menuMounted, menuOpen, menuProgress]);
+
+  const backdropFade = useAnimatedStyle(() => ({
+    opacity: menuProgress.value,
+  }));
+
+  const drawerSlide = useAnimatedStyle(() => ({
+    transform: [{ translateX: (1 - menuProgress.value) * DRAWER_WIDTH }],
+  }));
 
   async function onDelete() {
     setDeleting(true);
@@ -39,49 +72,57 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AccountMenuContext.Provider value={openMenu}>
+    <AccountMenuContext.Provider value={{ toggleMenu, menuOpen }}>
       {children}
-      {menuOpen ? (
-        <View style={styles.backdrop} pointerEvents="box-none">
-          <Pressable style={styles.backdropPress} onPress={closeMenu} />
-          <View style={[styles.menu, { top: insets.top + 62 }]}>
+      {menuMounted ? (
+        <View style={styles.backdrop} pointerEvents={menuOpen ? "auto" : "none"}>
+          <Animated.View style={[styles.dim, backdropFade]}>
+            <Pressable style={styles.backdropPress} onPress={closeMenu} />
+          </Animated.View>
+          <Animated.View
+            style={[
+              styles.drawer,
+              drawerSlide,
+              { paddingTop: insets.top + 18, paddingBottom: insets.bottom + 28 },
+            ]}
+          >
+            <View style={styles.drawerHeader}>
+              <Pressable
+                style={styles.closeButton}
+                onPress={closeMenu}
+                accessibilityRole="button"
+                accessibilityLabel="Close menu"
+              >
+                <X color={colors.primaryInk} size={26} />
+              </Pressable>
+            </View>
             <Pressable
-              style={styles.item}
+              style={[styles.item, styles.itemDivider]}
               onPress={() => {
                 closeMenu();
                 router.push("/doctors");
               }}
             >
-              <View style={[styles.itemIcon, { backgroundColor: "#E7F0E8" }]}>
-                <Home color={colors.sageInk} size={16} />
-              </View>
               <Text style={styles.itemText}>Home</Text>
             </Pressable>
             <Pressable
-              style={styles.item}
+              style={[styles.item, styles.itemDivider]}
               onPress={() => {
                 closeMenu();
                 router.push("/appointments");
               }}
             >
-              <View style={[styles.itemIcon, { backgroundColor: colors.blush }]}>
-                <Calendar color={colors.primary} size={16} />
-              </View>
               <Text style={styles.itemText}>My visits</Text>
             </Pressable>
             <Pressable
-              style={styles.item}
+              style={[styles.item, styles.itemDivider]}
               onPress={() => {
                 closeMenu();
                 setConfirmSignOut(true);
               }}
             >
-              <View style={[styles.itemIcon, { backgroundColor: "#F3EBE4" }]}>
-                <LogOut color={colors.muted} size={16} />
-              </View>
               <Text style={styles.itemText}>Sign out</Text>
             </Pressable>
-            <View style={styles.separator} />
             <Pressable
               style={styles.item}
               onPress={() => {
@@ -89,12 +130,9 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
                 setConfirmDelete(true);
               }}
             >
-              <View style={[styles.itemIcon, { backgroundColor: "#F8E4E1" }]}>
-                <UserX color={colors.danger} size={16} />
-              </View>
               <Text style={[styles.itemText, styles.dangerText]}>Delete account</Text>
             </Pressable>
-          </View>
+          </Animated.View>
         </View>
       ) : null}
       <ConfirmModal
@@ -125,22 +163,32 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
 }
 
 export function AppHeader() {
-  const openMenu = useAccountMenu();
+  const { toggleMenu, menuOpen } = useAccountMenu();
   const insets = useSafeAreaInsets();
   const { user } = useClinic();
   const firstName = user?.name.split(" ")[0];
 
   return (
     <View style={[styles.header, { paddingTop: insets.top }]}>
-      <Pressable style={styles.brand} onPress={openMenu}>
-        <View style={styles.mark}>
-          <Stethoscope color={colors.primaryInk} size={20} />
+      <View style={styles.bar}>
+        <View style={styles.brand}>
+          <View style={styles.mark}>
+            <Stethoscope color={colors.primaryInk} size={20} />
+          </View>
+          <View>
+            <Text style={styles.title}>Bloom Clinic</Text>
+            {firstName ? <Text style={styles.hello}>Hi, {firstName}</Text> : null}
+          </View>
         </View>
-        <View>
-          <Text style={styles.title}>Bloom Clinic</Text>
-          {firstName ? <Text style={styles.hello}>Hi, {firstName}</Text> : null}
-        </View>
-      </Pressable>
+        <Pressable
+          style={styles.menuButton}
+          onPress={toggleMenu}
+          accessibilityRole="button"
+          accessibilityLabel={menuOpen ? "Close menu" : "Open menu"}
+        >
+          <Menu color={colors.ink} size={26} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -151,12 +199,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
-  brand: {
+  bar: {
     height: 64,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+  },
+  brand: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
+    flexShrink: 1,
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
   mark: {
     width: 36,
@@ -185,6 +246,14 @@ const styles = StyleSheet.create({
     zIndex: 1100,
     elevation: 24,
   },
+  dim: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: "rgba(40, 24, 18, 0.45)",
+  },
   backdropPress: {
     position: "absolute",
     top: 0,
@@ -192,48 +261,43 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
   },
-  menu: {
+  drawer: {
     position: "absolute",
-    left: 16,
-    width: 230,
-    backgroundColor: colors.card,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: colors.line,
-    padding: 8,
-    shadowColor: "#8A5A48",
-    shadowOpacity: 0.16,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: DRAWER_WIDTH,
+    backgroundColor: colors.ink,
+    paddingHorizontal: 28,
+    shadowColor: "#2A1A14",
+    shadowOpacity: 0.28,
+    shadowRadius: 18,
+    shadowOffset: { width: -8, height: 0 },
+    elevation: 16,
   },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    borderRadius: 14,
-    paddingHorizontal: 8,
-    paddingVertical: 10,
+  drawerHeader: {
+    alignItems: "flex-end",
+    marginBottom: 28,
   },
-  itemIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+  closeButton: {
+    width: 40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
   },
+  item: {
+    paddingVertical: 20,
+  },
+  itemDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 248, 244, 0.22)",
+  },
   itemText: {
     fontFamily: fonts.sansMedium,
-    fontSize: 15,
-    color: colors.ink,
+    fontSize: 22,
+    color: colors.primaryInk,
   },
   dangerText: {
-    color: colors.danger,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.line,
-    marginVertical: 4,
-    marginHorizontal: 8,
+    color: "#F3B2A8",
   },
 });
