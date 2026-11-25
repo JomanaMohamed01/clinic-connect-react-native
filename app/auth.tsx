@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -15,6 +15,7 @@ import {
 import { Redirect, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Eye, EyeOff, Heart, Stethoscope } from "lucide-react-native";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BootScreen } from "@/components/BootScreen";
 import { GradientButton } from "@/components/GradientButton";
@@ -73,6 +74,17 @@ export default function AuthScreen() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const passwordStrength = getPasswordStrength(password);
+  const formOpacity = useSharedValue(1);
+  const hasSwitchedMode = useRef(false);
+
+  useEffect(() => {
+    if (!hasSwitchedMode.current) return;
+    formOpacity.value = withTiming(1, { duration: 280, easing: Easing.out(Easing.ease) });
+  }, [mode, formOpacity]);
+
+  const formFade = useAnimatedStyle(() => ({
+    opacity: formOpacity.value,
+  }));
 
   if (!ready) return <BootScreen />;
   if (user) return <Redirect href={isReception ? "/reception" : "/doctors"} />;
@@ -179,6 +191,9 @@ export default function AuthScreen() {
                   <Pressable
                     key={value}
                     onPress={() => {
+                      if (value === mode) return;
+                      hasSwitchedMode.current = true;
+                      formOpacity.value = 0;
                       setMode(value);
                       setFieldErrors({});
                     }}
@@ -192,6 +207,7 @@ export default function AuthScreen() {
               })}
             </View>
 
+            <Animated.View key={mode} style={formFade}>
             {!configured ? (
               <Text style={styles.configNote}>
                 Add the clinic-connect Supabase URL and anon key to .env before signing in. Both apps will share the same accounts and appointments.
@@ -291,6 +307,7 @@ export default function AuthScreen() {
                 disabled={submitting}
               />
             </View>
+            </Animated.View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
