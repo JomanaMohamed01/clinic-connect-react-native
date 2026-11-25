@@ -223,6 +223,7 @@ export default function AuthScreen() {
                   clearField("name");
                 }}
                 placeholder=""
+                required
                 error={fieldErrors.name ? EMPTY_FIELD_MESSAGE : undefined}
               />
             ) : null}
@@ -235,6 +236,7 @@ export default function AuthScreen() {
                 clearField("email");
               }}
               placeholder=""
+              required={mode === "signup"}
               keyboardType="email-address"
               autoCapitalize="none"
               error={
@@ -246,7 +248,10 @@ export default function AuthScreen() {
               }
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text style={styles.label}>
+              Password
+              {mode === "signup" ? <Text style={styles.required}> *</Text> : null}
+            </Text>
             <View style={[styles.passwordWrap, fieldErrors.password && styles.inputError]}>
               <TextInput
                 value={password}
@@ -328,6 +333,7 @@ function Field({
   onChangeText,
   placeholder,
   error,
+  required,
   keyboardType,
   autoCapitalize,
 }: {
@@ -336,12 +342,16 @@ function Field({
   onChangeText: (value: string) => void;
   placeholder: string;
   error?: string;
+  required?: boolean;
   keyboardType?: "default" | "email-address";
   autoCapitalize?: "none" | "words";
 }) {
   return (
     <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {label}
+        {required ? <Text style={styles.required}> *</Text> : null}
+      </Text>
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -475,6 +485,9 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 14,
     marginBottom: 6,
+  },
+  required: {
+    color: colors.danger,
   },
   input: {
     height: 48,
