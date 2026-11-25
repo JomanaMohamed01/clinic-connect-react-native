@@ -291,7 +291,6 @@ export default function AuthScreen() {
                 disabled={submitting}
               />
             </View>
-            <Text style={styles.footer}>Your appointments are saved securely to your clinic account.</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -528,13 +527,6 @@ const styles = StyleSheet.create({
   },
   strengthLabel: {
     fontFamily: fonts.sansMedium,
-    fontSize: 12,
-  },
-  footer: {
-    marginTop: 14,
-    textAlign: "center",
-    fontFamily: fonts.sans,
-    color: colors.muted,
     fontSize: 12,
   },
 });
