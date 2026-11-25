@@ -153,7 +153,7 @@ export default function BookScreen() {
                 <Clock color={colors.primary} size={16} />
                 <Text style={styles.sectionText}>
                   Pick a time <Text style={styles.required}>*</Text>
-                  <Text style={styles.sectionHint}> (15 min each)</Text>
+                  <Text style={styles.sectionHint}> (30 min each)</Text>
                 </Text>
               </View>
               <View style={styles.slots}>

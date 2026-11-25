@@ -80,7 +80,7 @@ export default function PastVisitsScreen() {
                     <Text style={styles.specialty}>{item.specialty}</Text>
                     <View style={styles.meta}>
                       <Clock color={colors.muted} size={14} />
-                      <Text style={styles.metaText}>{item.time} · 15 min</Text>
+                      <Text style={styles.metaText}>{item.time} · 30 min</Text>
                     </View>
                     <View style={styles.meta}>
                       <User color={colors.muted} size={14} />

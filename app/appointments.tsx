@@ -111,7 +111,7 @@ export default function AppointmentsScreen() {
               <CalendarPlus color={colors.primary} size={24} />
             </View>
             <Text style={styles.emptyTitle}>Nothing booked yet</Text>
-            <Text style={styles.emptyBody}>Reserve your first 15-minute visit with one of our doctors.</Text>
+            <Text style={styles.emptyBody}>Reserve your first 30-minute visit with one of our doctors.</Text>
             <Pressable style={[styles.book, styles.emptyBook]} onPress={() => router.push("/doctors")}>
               <Text style={styles.bookText}>Choose a doctor</Text>
             </Pressable>
@@ -132,7 +132,7 @@ export default function AppointmentsScreen() {
                     <Text style={styles.specialty}>{item.specialty}</Text>
                     <View style={styles.meta}>
                       <Clock color={colors.muted} size={14} />
-                      <Text style={styles.metaText}>{item.time} · 15 min</Text>
+                      <Text style={styles.metaText}>{item.time} · 30 min</Text>
                     </View>
                     <View style={styles.meta}>
                       <User color={colors.muted} size={14} />
