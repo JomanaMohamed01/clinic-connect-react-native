@@ -18,6 +18,7 @@ import { Eye, EyeOff, Heart, Stethoscope } from "lucide-react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BootScreen } from "@/components/BootScreen";
+import { SiteFooter } from "@/components/SiteFooter";
 import { GradientButton } from "@/components/GradientButton";
 import { colors, fonts, shadow } from "@/constants/theme";
 import { RECEPTION_PASSWORD, isReceptionEmail } from "@/lib/api";
@@ -316,6 +317,7 @@ export default function AuthScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <SiteFooter />
     </LinearGradient>
     {submitting ? (
       <View style={styles.loadingOverlay}>

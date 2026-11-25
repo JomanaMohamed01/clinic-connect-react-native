@@ -3,6 +3,7 @@ import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, Sty
 import { Redirect, useFocusEffect, useIsFocused, useRouter } from "expo-router";
 import { CalendarPlus, Clock, Trash2, User } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { BootScreen } from "@/components/BootScreen";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { colors, fonts, shadow } from "@/constants/theme";
@@ -151,6 +152,8 @@ export default function AppointmentsScreen() {
             })}
           </View>
         )}
+        <View style={styles.spacer} />
+        <SiteFooter bleed={20} />
       </ScrollView>
 
       <ConfirmModal
@@ -194,7 +197,8 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 16,
   },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { flexGrow: 1, padding: 20, paddingBottom: 0 },
+  spacer: { flexGrow: 1 },
   headingRow: { marginBottom: 12 },
   title: { fontFamily: fonts.display, fontSize: 36, color: colors.ink },
   sub: { marginTop: 4, fontFamily: fonts.sans, color: colors.muted, fontSize: 15 },

@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BootScreen } from "@/components/BootScreen";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { ReceptionReserveModal } from "@/components/ReceptionReserveModal";
+import { SiteFooter } from "@/components/SiteFooter";
 import { colors, fonts, shadow } from "@/constants/theme";
 import { getReceptionBookingsForDay, receptionCancelBooking } from "@/lib/api";
 import { startOfDay } from "@/lib/doctors";
@@ -168,6 +169,8 @@ export default function ReceptionScreen() {
             })}
           </View>
         )}
+        <View style={styles.spacer} />
+        <SiteFooter bleed={20} />
       </ScrollView>
 
       <ReceptionReserveModal
@@ -226,7 +229,8 @@ const styles = StyleSheet.create({
   brandSub: { fontFamily: fonts.sans, fontSize: 12, color: colors.muted },
   signOut: { flexDirection: "row", alignItems: "center", gap: 6, padding: 8 },
   signOutText: { fontFamily: fonts.sansMedium, color: colors.ink, fontSize: 14 },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { flexGrow: 1, padding: 20, paddingBottom: 0 },
+  spacer: { flexGrow: 1 },
   title: { fontFamily: fonts.display, fontSize: 34, color: colors.ink },
   sub: { marginTop: 4, fontFamily: fonts.sans, color: colors.muted, fontSize: 15 },
   reserve: {

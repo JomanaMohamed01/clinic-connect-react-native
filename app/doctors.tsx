@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { BootScreen } from "@/components/BootScreen";
 import { DoctorAvatar } from "@/components/DoctorAvatar";
 import { colors, fonts, shadow } from "@/constants/theme";
@@ -53,6 +54,8 @@ export default function DoctorsScreen() {
             </Pressable>
           ))}
         </View>
+        <View style={styles.spacer} />
+        <SiteFooter bleed={20} />
       </ScrollView>
     </View>
   );
@@ -64,8 +67,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
+    flexGrow: 1,
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 0,
+  },
+  spacer: {
+    flexGrow: 1,
   },
   title: {
     fontFamily: fonts.display,

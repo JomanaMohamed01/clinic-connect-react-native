@@ -12,6 +12,7 @@ import {
 import { Redirect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { ArrowLeft, Calendar, Check, Clock } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { BootScreen } from "@/components/BootScreen";
 import { DoctorAvatar } from "@/components/DoctorAvatar";
 import { GradientButton } from "@/components/GradientButton";
@@ -233,6 +234,8 @@ export default function BookScreen() {
             loading={submitting}
             icon={<Check color={colors.primaryInk} size={16} />}
           />
+          <View style={styles.spacer} />
+          <SiteFooter bleed={20} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -256,7 +259,8 @@ function RequiredLabel({ text }: { text: string }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 20, paddingBottom: 40, gap: 8 },
+  content: { flexGrow: 1, padding: 20, paddingBottom: 0, gap: 8 },
+  spacer: { flexGrow: 1 },
   back: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 12 },
   backText: { fontFamily: fonts.sans, color: colors.muted, fontSize: 14 },
   doctorCard: {

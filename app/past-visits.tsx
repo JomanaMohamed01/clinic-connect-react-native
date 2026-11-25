@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native
 import { Redirect, useFocusEffect } from "expo-router";
 import { Clock, History, User } from "lucide-react-native";
 import { AppHeader } from "@/components/AppHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { BootScreen } from "@/components/BootScreen";
 import { colors, fonts, shadow } from "@/constants/theme";
 import { getAppointments } from "@/lib/api";
@@ -95,6 +96,8 @@ export default function PastVisitsScreen() {
             })}
           </View>
         )}
+        <View style={styles.spacer} />
+        <SiteFooter bleed={20} />
       </ScrollView>
     </View>
   );
@@ -102,7 +105,8 @@ export default function PastVisitsScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { flexGrow: 1, padding: 20, paddingBottom: 0 },
+  spacer: { flexGrow: 1 },
   headingRow: { marginBottom: 16 },
   title: { fontFamily: fonts.display, fontSize: 36, color: colors.ink },
   sub: { marginTop: 4, fontFamily: fonts.sans, color: colors.muted, fontSize: 15 },
