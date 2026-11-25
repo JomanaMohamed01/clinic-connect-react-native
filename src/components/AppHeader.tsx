@@ -118,6 +118,15 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
               style={[styles.item, styles.itemDivider]}
               onPress={() => {
                 closeMenu();
+                router.push("/past-visits");
+              }}
+            >
+              <Text style={styles.itemText}>Past visits</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.item, styles.itemDivider]}
+              onPress={() => {
+                closeMenu();
                 setConfirmSignOut(true);
               }}
             >

@@ -8,7 +8,7 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import { colors, fonts, shadow } from "@/constants/theme";
 import { clearInstantAppointmentsOpen, hasAppointmentNotice, takeAppointmentNotice } from "@/lib/appointmentNotice";
 import { cancelAppointment, getAppointments } from "@/lib/api";
-import { formatMonthShort, formatWeekdayShort, parseDateKey } from "@/lib/format";
+import { formatMonthShort, formatWeekdayShort, isPastVisit, parseDateKey } from "@/lib/format";
 import type { Appointment } from "@/lib/types";
 import { useClinic } from "@/providers/ClinicProvider";
 
@@ -24,7 +24,9 @@ export default function AppointmentsScreen() {
   const load = useCallback(async () => {
     if (!user) return;
     try {
-      const next = await getAppointments(user.id, user.email);
+      const next = (await getAppointments(user.id, user.email)).filter(
+        (item) => !isPastVisit(item.date, item.time),
+      );
       next.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
       setItems(next);
     } catch (err) {

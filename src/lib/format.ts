@@ -71,3 +71,20 @@ export function slotToTime(slotStart: string) {
   const date = slotKeyToDate(slotStart);
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
+
+const VISIT_MINUTES = 15;
+
+export function appointmentStartsAt(dateKey: string, time: string) {
+  return new Date(
+    Number(dateKey.slice(0, 4)),
+    Number(dateKey.slice(5, 7)) - 1,
+    Number(dateKey.slice(8, 10)),
+    Number(time.slice(0, 2)),
+    Number(time.slice(3, 5)),
+  );
+}
+
+/** A visit is past once its 15-minute slot has ended. */
+export function isPastVisit(dateKey: string, time: string, now = new Date()) {
+  return appointmentStartsAt(dateKey, time).getTime() + VISIT_MINUTES * 60 * 1000 <= now.getTime();
+}
