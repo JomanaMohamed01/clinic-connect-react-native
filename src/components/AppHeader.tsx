@@ -162,6 +162,7 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
         message="This permanently removes your Bloom Clinic sign-in and every appointment saved to this account. This can’t be undone."
         confirmLabel={deleting ? "Deleting…" : "Delete account"}
         cancelLabel="Keep my account"
+        confirmFirst
         destructive
         busy={deleting}
         onCancel={() => !deleting && setConfirmDelete(false)}
