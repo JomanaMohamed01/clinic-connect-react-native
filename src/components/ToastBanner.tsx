@@ -1,19 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, fonts, shadow } from "@/constants/theme";
+import { colors, fonts, gradient, shadow } from "@/constants/theme";
 import { useClinic } from "@/providers/ClinicProvider";
+
+const SLIDE_MS = 320;
+const HIDDEN_Y = -180;
 
 export function ToastBanner() {
   const insets = useSafeAreaInsets();
   const { toast, hideToast } = useClinic();
-  const translateY = useSharedValue(0);
+  const [shown, setShown] = useState(toast);
+  const translateY = useSharedValue(HIDDEN_Y);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    translateY.value = 0;
-  }, [toast, translateY]);
+    if (toast) {
+      setShown(toast);
+      return;
+    }
+    if (!shown) return;
+    translateY.value = withTiming(HIDDEN_Y, { duration: SLIDE_MS, easing: Easing.in(Easing.ease) });
+    opacity.value = withTiming(0, { duration: SLIDE_MS, easing: Easing.in(Easing.ease) }, (finished) => {
+      if (finished) runOnJS(setShown)(null);
+    });
+  }, [toast, shown, opacity, translateY]);
+
+  useEffect(() => {
+    if (!toast || !shown) return;
+    translateY.value = HIDDEN_Y;
+    opacity.value = 0;
+    translateY.value = withTiming(0, { duration: SLIDE_MS, easing: Easing.out(Easing.ease) });
+    opacity.value = withTiming(1, { duration: SLIDE_MS, easing: Easing.out(Easing.ease) });
+  }, [toast, shown, opacity, translateY]);
 
   useEffect(() => {
     if (!toast) return;
@@ -41,25 +63,26 @@ export function ToastBanner() {
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
     transform: [{ translateY: translateY.value }],
   }));
 
-  if (!toast) return null;
+  if (!shown) return null;
 
   return (
     <GestureDetector gesture={Gesture.Exclusive(pan, tap)}>
       <Animated.View
-        style={[
-          styles.banner,
-          shadow,
-          animatedStyle,
-          {
-            top: insets.top + 12,
-            backgroundColor: toast.tone === "error" ? colors.danger : colors.ink,
-          },
-        ]}
+        pointerEvents={toast ? "auto" : "none"}
+        style={[styles.banner, shadow, animatedStyle, { top: insets.top + 12 }]}
       >
-        <Text style={styles.text}>{toast.message}</Text>
+        <LinearGradient
+          colors={gradient.peach}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fill}
+        >
+          <Text style={styles.text}>{shown.message}</Text>
+        </LinearGradient>
       </Animated.View>
     </GestureDetector>
   );
@@ -72,6 +95,9 @@ const styles = StyleSheet.create({
     right: 16,
     zIndex: 1000,
     borderRadius: 18,
+    overflow: "hidden",
+  },
+  fill: {
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
