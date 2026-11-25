@@ -1,8 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
-import { fonts } from "@/constants/theme";
+import { StyleSheet, View } from "react-native";
+import { Baby, HeartPulse, ScanFace, Stethoscope, type LucideIcon } from "lucide-react-native";
 import type { Doctor } from "@/lib/types";
 
+const specialtyIcons: Record<string, LucideIcon> = {
+  "General Medicine": Stethoscope,
+  Dermatology: ScanFace,
+  Pediatrics: Baby,
+  Cardiology: HeartPulse,
+};
+
 export function DoctorAvatar({ doctor, size = 56 }: { doctor: Doctor; size?: number }) {
+  const Icon = specialtyIcons[doctor.specialty] ?? Stethoscope;
+
   return (
     <View
       style={[
@@ -15,9 +24,7 @@ export function DoctorAvatar({ doctor, size = 56 }: { doctor: Doctor; size?: num
         },
       ]}
     >
-      <Text style={[styles.initials, { color: doctor.ink, fontSize: size * 0.32 }]}>
-        {doctor.initials}
-      </Text>
+      <Icon color={doctor.ink} size={Math.round(size * 0.5)} />
     </View>
   );
 }
@@ -26,8 +33,5 @@ const styles = StyleSheet.create({
   avatar: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  initials: {
-    fontFamily: fonts.display,
   },
 });
