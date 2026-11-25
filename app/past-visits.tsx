@@ -51,11 +51,7 @@ export default function PastVisitsScreen() {
       >
         <View style={styles.headingRow}>
           <Text style={styles.title}>Past visits</Text>
-          <Text style={styles.sub}>
-            {items.length
-              ? `You have ${items.length} completed visit${items.length > 1 ? "s" : ""}.`
-              : "No past visits yet."}
-          </Text>
+          {items.length === 0 && !loading ? <Text style={styles.sub}>No past visits yet.</Text> : null}
         </View>
 
         {items.length === 0 && !loading ? (
