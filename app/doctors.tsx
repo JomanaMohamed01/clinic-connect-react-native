@@ -33,7 +33,7 @@ export default function DoctorsScreen() {
         showsHorizontalScrollIndicator={false}
       >
         <Text style={styles.title}>Choose your doctor</Text>
-        <Text style={styles.sub}>Every visit is 15 minutes. Pick the specialist that fits you.</Text>
+        <Text style={styles.sub}>Pick the specialist that fits you.</Text>
         <View style={styles.list}>
           {DOCTORS.map((doctor) => (
             <Pressable
