@@ -206,7 +206,7 @@ export default function AuthScreen() {
                   setName(value);
                   clearField("name");
                 }}
-                placeholder="Sara Ahmed"
+                placeholder=""
                 error={fieldErrors.name ? EMPTY_FIELD_MESSAGE : undefined}
               />
             ) : null}
@@ -218,7 +218,7 @@ export default function AuthScreen() {
                 setEmail(value);
                 clearField("email");
               }}
-              placeholder={mode === "signin" ? "" : "you@email.com"}
+              placeholder=""
               keyboardType="email-address"
               autoCapitalize="none"
               error={
@@ -239,7 +239,7 @@ export default function AuthScreen() {
                   clearField("password");
                 }}
                 secureTextEntry={!showPassword}
-                placeholder={mode === "signin" ? "" : "••••••••"}
+                placeholder=""
                 placeholderTextColor={colors.muted}
                 autoCapitalize="none"
                 style={[styles.passwordInput, webInputOutline]}
