@@ -173,6 +173,7 @@ export function AccountMenuProvider({ children }: { children: ReactNode }) {
 
 export function AppHeader() {
   const { toggleMenu, menuOpen } = useAccountMenu();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useClinic();
   const firstName = user?.name.split(" ")[0];
@@ -180,7 +181,12 @@ export function AppHeader() {
   return (
     <View style={[styles.header, { paddingTop: insets.top }]}>
       <View style={styles.bar}>
-        <View style={styles.brand}>
+        <Pressable
+          style={styles.brand}
+          onPress={() => router.push("/doctors")}
+          accessibilityRole="button"
+          accessibilityLabel="Home"
+        >
           <View style={styles.mark}>
             <Stethoscope color={colors.primaryInk} size={20} />
           </View>
@@ -188,7 +194,7 @@ export function AppHeader() {
             <Text style={styles.title}>Bloom Clinic</Text>
             {firstName ? <Text style={styles.hello}>Hi, {firstName}</Text> : null}
           </View>
-        </View>
+        </Pressable>
         <Pressable
           style={styles.menuButton}
           onPress={toggleMenu}
